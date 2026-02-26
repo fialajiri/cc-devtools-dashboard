@@ -1,11 +1,13 @@
 'use client';
 
+import { useId, useMemo } from 'react';
 import type { MetricSnapshot } from '@/types/metrics';
 import {
   Area,
   AreaChart,
   ResponsiveContainer,
   Tooltip,
+  YAxis,
   type TooltipContentProps,
 } from 'recharts';
 import { formatBytes, formatPercent } from '@/lib/format';
@@ -24,8 +26,9 @@ function MemTooltip({ active, payload }: TooltipContentProps<number, string>) {
 }
 
 export default function MemoryGauge({ snapshots }: Props) {
+  const gradientId = useId();
   const latest = snapshots[snapshots.length - 1];
-  const data = snapshots.map(s => ({ value: s.memory.percentUsed }));
+  const data = useMemo(() => snapshots.map(s => ({ value: s.memory.percentUsed })), [snapshots]);
   const pct = latest ? Math.min(100, latest.memory.percentUsed) : 0;
 
   return (
@@ -45,18 +48,19 @@ export default function MemoryGauge({ snapshots }: Props) {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
             <defs>
-              <linearGradient id="memGradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="30%" stopColor="#0ea5e9" stopOpacity={0.3} />
                 <stop offset="100%" stopColor="#0ea5e9" stopOpacity={0} />
               </linearGradient>
             </defs>
+            <YAxis domain={[0, 100]} hide allowDataOverflow />
             <Tooltip content={MemTooltip} />
             <Area
               type="monotone"
               dataKey="value"
               stroke="#0ea5e9"
               strokeWidth={1.5}
-              fill="url(#memGradient)"
+              fill={`url(#${gradientId})`}
               dot={false}
               isAnimationActive={false}
             />
@@ -68,6 +72,11 @@ export default function MemoryGauge({ snapshots }: Props) {
         <div className="flex flex-col gap-1">
           <div className="h-2 rounded-full bg-gray-800 overflow-hidden">
             <div
+              role="progressbar"
+              aria-valuenow={Math.round(pct)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Memory usage"
               className="h-full rounded-full bg-sky-500 transition-[width] duration-500"
               style={{ width: `${pct}%` }}
             />

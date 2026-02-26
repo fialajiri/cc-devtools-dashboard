@@ -29,10 +29,14 @@ export default function Dashboard() {
     esRef.current = es;
 
     es.addEventListener('metric', (e: MessageEvent) => {
-      const snapshot = JSON.parse(e.data) as MetricSnapshot;
-      setSnapshots(prev => [...prev.slice(-59), snapshot]);
-      setStatus('live');
-      retryRef.current = 0;
+      try {
+        const snapshot = JSON.parse(e.data) as MetricSnapshot;
+        setSnapshots(prev => [...prev.slice(-59), snapshot]);
+        setStatus('live');
+        retryRef.current = 0;
+      } catch {
+        // skip malformed message
+      }
     });
 
     es.onerror = () => {
@@ -61,8 +65,6 @@ export default function Dashboard() {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [connect]);
-
-  const latest = snapshots[snapshots.length - 1];
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-6">

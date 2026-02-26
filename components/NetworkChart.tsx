@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import type { MetricSnapshot } from '@/types/metrics';
 import {
   Line,
@@ -28,7 +29,10 @@ function NetworkTooltip({ active, payload }: TooltipContentProps<number, string>
 
 export default function NetworkChart({ snapshots }: Props) {
   const latest = snapshots[snapshots.length - 1];
-  const data = snapshots.map(s => ({ bytesIn: s.network.bytesIn, bytesOut: s.network.bytesOut }));
+  const data = useMemo(
+    () => snapshots.map(s => ({ bytesIn: s.network.bytesIn, bytesOut: s.network.bytesOut })),
+    [snapshots],
+  );
 
   return (
     <div className="flex flex-col gap-3 w-full">
@@ -58,6 +62,7 @@ export default function NetworkChart({ snapshots }: Props) {
               dataKey="bytesOut"
               stroke="#3b82f6"
               strokeWidth={1.5}
+              strokeDasharray="4 3"
               dot={false}
               isAnimationActive={false}
             />

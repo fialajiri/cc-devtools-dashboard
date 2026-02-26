@@ -17,7 +17,7 @@ export default function DiskUsage({ snapshots }: Props) {
   }
 
   return (
-    <div className="grid gap-y-2 w-full" style={{ gridTemplateColumns: '3.5rem 1fr auto' }}>
+    <div className="grid gap-y-2 w-full grid-cols-[3.5rem_1fr_auto]">
       {partitions.map(partition => (
         <Fragment key={partition.mount}>
           <span
@@ -28,6 +28,11 @@ export default function DiskUsage({ snapshots }: Props) {
           </span>
           <div className="self-center h-1.5 rounded-full bg-gray-800 overflow-hidden mx-1">
             <div
+              role="progressbar"
+              aria-valuenow={Math.round(partition.percentUsed)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`Disk usage for ${partition.mount}`}
               className="h-full rounded-full bg-amber-500"
               style={{ width: `${Math.min(100, partition.percentUsed)}%` }}
             />

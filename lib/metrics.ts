@@ -3,8 +3,7 @@ import type { Systeminformation } from 'systeminformation';
 import os from 'os';
 import type { MetricSnapshot, SystemInfo } from '@/types/metrics';
 
-// null on first call → network delta returns rx: 0, tx: 0 for that tick
-let prevNet: Systeminformation.NetworkStatsData[] | null = null;
+export type PrevNet = Systeminformation.NetworkStatsData[] | null;
 
 export async function getSystemInfo(): Promise<SystemInfo> {
   const [osInfo, versions] = await Promise.all([
@@ -24,7 +23,9 @@ export async function getSystemInfo(): Promise<SystemInfo> {
   };
 }
 
-export async function getMetricSnapshot(): Promise<MetricSnapshot> {
+export async function getMetricSnapshot(
+  prevNet: PrevNet,
+): Promise<{ snapshot: MetricSnapshot; prevNet: PrevNet }> {
   const [load, fsData, currNet] = await Promise.all([
     si.currentLoad().catch(() => null),
     si.fsSize().catch(() => []),
@@ -59,24 +60,27 @@ export async function getMetricSnapshot(): Promise<MetricSnapshot> {
     bytesIn = Math.max(0, currNet[0].rx_bytes - prevNet[0].rx_bytes);
     bytesOut = Math.max(0, currNet[0].tx_bytes - prevNet[0].tx_bytes);
   }
-  prevNet = currNet.length > 0 ? currNet : prevNet;
+  const nextPrevNet = currNet.length > 0 ? currNet : prevNet;
 
   return {
-    timestamp: Date.now(),
-    cpu: {
-      overall: cpuOverall,
-      cores: cpuCores,
+    snapshot: {
+      timestamp: Date.now(),
+      cpu: {
+        overall: cpuOverall,
+        cores: cpuCores,
+      },
+      memory: {
+        total: memTotal,
+        used: memUsed,
+        free: memFree,
+        percentUsed: (memUsed / memTotal) * 100,
+      },
+      network: {
+        bytesIn,
+        bytesOut,
+      },
+      disk,
     },
-    memory: {
-      total: memTotal,
-      used: memUsed,
-      free: memFree,
-      percentUsed: (memUsed / memTotal) * 100,
-    },
-    network: {
-      bytesIn,
-      bytesOut,
-    },
-    disk,
+    prevNet: nextPrevNet,
   };
 }
