@@ -72,7 +72,7 @@ export default function MemoryGauge({ snapshots }: Props) {
               style={{ width: `${pct}%` }}
             />
           </div>
-          <div className="flex justify-between text-xs text-gray-600 font-mono">
+          <div className="flex justify-between text-xs text-gray-500 font-mono">
             <span>0</span>
             <span>{formatBytes(latest.memory.total)}</span>
           </div>

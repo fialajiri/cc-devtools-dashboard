@@ -20,7 +20,10 @@ export default function DiskUsage({ snapshots }: Props) {
     <div className="grid gap-y-2 w-full" style={{ gridTemplateColumns: '3.5rem 1fr auto' }}>
       {partitions.map(partition => (
         <Fragment key={partition.mount}>
-          <span className="text-xs text-gray-500 font-mono self-center truncate">
+          <span
+            className="text-xs text-gray-500 font-mono self-center truncate"
+            title={`${partition.mount} — ${formatBytes(partition.used)} / ${formatBytes(partition.total)} (${formatPercent(partition.percentUsed)})`}
+          >
             {partition.mount}
           </span>
           <div className="self-center h-1.5 rounded-full bg-gray-800 overflow-hidden mx-1">

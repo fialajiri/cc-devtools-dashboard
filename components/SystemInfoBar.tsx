@@ -23,8 +23,12 @@ export default function SystemInfoBar({ systemInfo }: { systemInfo: SystemInfo |
   const uptime = liveUptime ?? Math.floor(systemInfo.uptime);
 
   return (
-    <div className="text-xs text-gray-500 mb-2">
-      {systemInfo.hostname} · {systemInfo.os} · {systemInfo.arch} · {systemInfo.nodeVersion} · {formatUptime(uptime)}
+    <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-500 mb-2">
+      <span>{systemInfo.hostname}</span>
+      <span>{systemInfo.os}</span>
+      <span>{systemInfo.arch}</span>
+      <span>{systemInfo.nodeVersion}</span>
+      <span>{formatUptime(uptime)}</span>
     </div>
   );
 }
