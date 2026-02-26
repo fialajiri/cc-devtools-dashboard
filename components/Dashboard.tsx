@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MetricSnapshot, SystemInfo } from '@/types/metrics';
 import ConnectionBadge from './ConnectionBadge';
+import CpuGauge from './CpuGauge';
+import MemoryGauge from './MemoryGauge';
 import MetricCard from './MetricCard';
 import SystemInfoBar from './SystemInfoBar';
 
@@ -71,15 +73,11 @@ export default function Dashboard() {
 
       <main className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <MetricCard title="CPU">
-          <span className="font-mono text-violet-400 text-2xl">
-            {latest ? `${latest.cpu.overall.toFixed(1)}%` : '—'}
-          </span>
+          <CpuGauge snapshots={snapshots} />
         </MetricCard>
 
         <MetricCard title="Memory">
-          <span className="font-mono text-sky-400 text-2xl">
-            {latest ? `${latest.memory.percentUsed.toFixed(1)}%` : '—'}
-          </span>
+          <MemoryGauge snapshots={snapshots} />
         </MetricCard>
 
         <MetricCard title="Network">
