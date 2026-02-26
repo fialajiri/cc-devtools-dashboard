@@ -2,13 +2,10 @@
 
 import { Fragment } from 'react';
 import type { MetricSnapshot } from '@/types/metrics';
+import { formatBytes, formatPercent } from '@/lib/format';
 
 interface Props {
   snapshots: MetricSnapshot[];
-}
-
-function formatGB(bytes: number) {
-  return (bytes / 1024 ** 3).toFixed(1) + ' GB';
 }
 
 export default function DiskUsage({ snapshots }: Props) {
@@ -33,7 +30,7 @@ export default function DiskUsage({ snapshots }: Props) {
             />
           </div>
           <span className="text-xs text-gray-400 font-mono text-right self-center whitespace-nowrap">
-            {formatGB(partition.used)} / {formatGB(partition.total)} · {partition.percentUsed.toFixed(0)}%
+            {formatBytes(partition.used)} / {formatBytes(partition.total)} · {formatPercent(partition.percentUsed, 0)}
           </span>
         </Fragment>
       ))}

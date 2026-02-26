@@ -2,6 +2,7 @@
 
 import { Fragment } from 'react';
 import type { MetricSnapshot } from '@/types/metrics';
+import { formatPercent } from '@/lib/format';
 import {
   Area,
   AreaChart,
@@ -18,7 +19,7 @@ function CpuTooltip({ active, payload }: TooltipContentProps<number, string>) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-xs font-mono text-violet-400">
-      {payload[0].value?.toFixed(1)}%
+      {formatPercent(payload[0].value)}
     </div>
   );
 }
@@ -31,7 +32,7 @@ export default function CpuGauge({ snapshots }: Props) {
   return (
     <div className="flex flex-col gap-3 w-full">
       <span className="font-mono text-2xl text-violet-400">
-        {latest ? `${latest.cpu.overall.toFixed(1)}%` : '—'}
+        {formatPercent(latest?.cpu.overall)}
       </span>
 
       <div className="h-20">
@@ -71,7 +72,7 @@ export default function CpuGauge({ snapshots }: Props) {
                 />
               </div>
               <span className="text-xs text-gray-400 font-mono text-right self-center">
-                {pct.toFixed(0)}%
+                {formatPercent(pct, 0)}
               </span>
             </Fragment>
           ))}

@@ -8,14 +8,10 @@ import {
   Tooltip,
   type TooltipContentProps,
 } from 'recharts';
+import { formatSpeed } from '@/lib/format';
 
 interface Props {
   snapshots: MetricSnapshot[];
-}
-
-function formatSpeed(bytes: number): string {
-  if (bytes >= 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB/s';
-  return (bytes / 1024).toFixed(1) + ' KB/s';
 }
 
 function NetworkTooltip({ active, payload }: TooltipContentProps<number, string>) {

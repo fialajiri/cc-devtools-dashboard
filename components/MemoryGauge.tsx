@@ -8,20 +8,17 @@ import {
   Tooltip,
   type TooltipContentProps,
 } from 'recharts';
+import { formatBytes, formatPercent } from '@/lib/format';
 
 interface Props {
   snapshots: MetricSnapshot[];
-}
-
-function formatBytes(bytes: number) {
-  return (bytes / 1024 ** 3).toFixed(1) + ' GB';
 }
 
 function MemTooltip({ active, payload }: TooltipContentProps<number, string>) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-xs font-mono text-sky-400">
-      {payload[0].value?.toFixed(1)}%
+      {formatPercent(payload[0].value)}
     </div>
   );
 }
@@ -35,7 +32,7 @@ export default function MemoryGauge({ snapshots }: Props) {
     <div className="flex flex-col gap-3 w-full">
       <div className="flex items-baseline gap-2">
         <span className="font-mono text-2xl text-sky-400">
-          {latest ? `${latest.memory.percentUsed.toFixed(1)}%` : '—'}
+          {formatPercent(latest?.memory.percentUsed)}
         </span>
         {latest && (
           <span className="text-xs text-gray-500 font-mono">
