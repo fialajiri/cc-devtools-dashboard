@@ -4,8 +4,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MetricSnapshot, SystemInfo } from '@/types/metrics';
 import ConnectionBadge from './ConnectionBadge';
 import CpuGauge from './CpuGauge';
+import DiskUsage from './DiskUsage';
 import MemoryGauge from './MemoryGauge';
 import MetricCard from './MetricCard';
+import NetworkChart from './NetworkChart';
 import SystemInfoBar from './SystemInfoBar';
 
 const RETRY_DELAYS = [1000, 2000, 4000, 8000];
@@ -81,11 +83,11 @@ export default function Dashboard() {
         </MetricCard>
 
         <MetricCard title="Network">
-          <span className="text-gray-500 text-sm">Network chart coming soon</span>
+          <NetworkChart snapshots={snapshots} />
         </MetricCard>
 
         <MetricCard title="Disk">
-          <span className="text-gray-500 text-sm">Disk usage coming soon</span>
+          <DiskUsage snapshots={snapshots} />
         </MetricCard>
       </main>
     </div>
