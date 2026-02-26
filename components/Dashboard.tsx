@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MetricSnapshot, SystemInfo } from '@/types/metrics';
 import ConnectionBadge from './ConnectionBadge';
 import MetricCard from './MetricCard';
+import SystemInfoBar from './SystemInfoBar';
 
 const RETRY_DELAYS = [1000, 2000, 4000, 8000];
 
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const esRef = useRef<EventSource | null>(null);
   const retryRef = useRef(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const connectRef = useRef<() => void>(() => {});
 
   const connect = useCallback(() => {
     setStatus(retryRef.current === 0 ? 'connecting' : 'reconnecting');
@@ -34,9 +36,13 @@ export default function Dashboard() {
       const delay = RETRY_DELAYS[Math.min(retryRef.current, RETRY_DELAYS.length - 1)];
       retryRef.current += 1;
       setStatus('reconnecting');
-      timeoutRef.current = setTimeout(connect, delay);
+      timeoutRef.current = setTimeout(() => connectRef.current(), delay);
     };
   }, []);
+
+  useEffect(() => {
+    connectRef.current = connect;
+  }, [connect]);
 
   useEffect(() => {
     fetch('/api/metrics/system')
@@ -44,7 +50,7 @@ export default function Dashboard() {
       .then(setSystemInfo)
       .catch(() => {/* system info is non-critical */});
 
-    connect();
+    timeoutRef.current = setTimeout(connect, 0);
 
     return () => {
       esRef.current?.close();
@@ -61,11 +67,7 @@ export default function Dashboard() {
         <ConnectionBadge status={status} />
       </header>
 
-      {systemInfo && (
-        <div className="text-xs text-gray-500 mb-2">
-          {systemInfo.hostname} · {systemInfo.os} · {systemInfo.arch}
-        </div>
-      )}
+      <SystemInfoBar systemInfo={systemInfo} />
 
       <main className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <MetricCard title="CPU">
