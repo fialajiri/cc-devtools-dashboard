@@ -3,6 +3,7 @@ import type { Systeminformation } from 'systeminformation';
 import os from 'os';
 import type { MetricSnapshot, SystemInfo } from '@/types/metrics';
 
+// null on first call → network delta returns rx: 0, tx: 0 for that tick
 let prevNet: Systeminformation.NetworkStatsData[] | null = null;
 
 export async function getSystemInfo(): Promise<SystemInfo> {

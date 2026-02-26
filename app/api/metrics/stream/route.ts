@@ -10,7 +10,8 @@ export async function GET() {
           const snapshot = await getMetricSnapshot();
           const data = `event: metric\ndata: ${JSON.stringify(snapshot)}\n\n`;
           controller.enqueue(new TextEncoder().encode(data));
-        } catch {
+        } catch (err) {
+          console.error(err);
           // skip this tick, keep stream open
         }
       }, 1000);
